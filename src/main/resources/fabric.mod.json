@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "block_effects",
+	"version": "${version}",
+	"name": "block_effects",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/block_effects/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"wta.Block_effects"
+		],
+		"fabric-datagen": [
+			"wta.Block_effectsDataGenerator"
+		]
+	},
+	"mixins": [
+		"block_effects.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.17.2",
+		"minecraft": "~1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	},
+	"accessWidener" : "be.accessWidener"
+}
