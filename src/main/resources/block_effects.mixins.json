@@ -1,14 +1,14 @@
 {
-	"required": true,
-	"package": "wta.mixins.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-		"LivingEntityFixer"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	},
-	"overwrites": {
-		"requireAnnotations": true
+  "required": true,
+  "package": "wta.mixins.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "LivingEntityFixer"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
 	}
 }

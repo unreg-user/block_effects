@@ -90,6 +90,11 @@ public class IdentifierEntryedListGRRule<T> extends GameRules.Rule<IdentifierEnt
 		this.changed(server);
 	}
 
+	@Override
+	public void changed(@Nullable MinecraftServer server) {
+		super.changed(server);
+	}
+
 	public ArrayList<RegistryEntry<T>> getValue(){
 		return value;
 	}
@@ -102,8 +107,7 @@ public class IdentifierEntryedListGRRule<T> extends GameRules.Rule<IdentifierEnt
 		this.value=value;
 	}
 
-	@Override
-	public void changed(@Nullable MinecraftServer server) {
-		super.changed(server);
+	public void onChanged(){
+		this.deserializeT();
 	}
 }

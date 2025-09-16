@@ -3,31 +3,30 @@ package wta.fun;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.mob.Monster;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
-import wta.gamerule.GamerulesInit;
-
-import java.util.ArrayList;
 
 import static wta.Block_effects.allEffectList;
 
 public class ChooseEffectSystem {
-	public StatusEffect effect;
-	private Random random;
+	protected final Random random;
 
-	public ChooseEffectSystem getFor(ServerWorld world, Difficulty difficulty, BlockPos pos, boolean isMonster){
+	protected final Difficulty difficulty;
+	protected final boolean isMonster;
+
+	public ChooseEffectSystem(ServerWorld world, Difficulty difficulty, BlockPos pos, boolean isMonster) {
+		this.difficulty = difficulty;
+		this.isMonster = isMonster;
+
 		random=BlockPosRandom.of(world, pos, 18435L);
-		ArrayList<StatusEffect> rule=world.getGameRules().get(GamerulesInit.BlockDisabledEffectsGR).getTValue();
-		ArrayList<StatusEffect> effects=new ArrayList<>(allEffectList.stream()
-			  .filter(rule::contains)
-			  .toList());
+	}
 
-		StatusEffect statusEffect=effects.get(random.nextInt(effects.size()));
+	public RegistryEntry<StatusEffect> getEntryStatusEffect(){
+		StatusEffect statusEffect=allEffectList.get(random.nextInt(allEffectList.size()));
 
 		for (int i = 0; i < switch (difficulty){
 			case HARD, PEACEFUL -> 2;
@@ -37,36 +36,35 @@ public class ChooseEffectSystem {
 			switch (difficulty){
 				case PEACEFUL, EASY -> {
 					if (statusEffect.getCategory()== StatusEffectCategory.HARMFUL){
-						statusEffect=effects.get(random.nextInt(effects.size()));
+						statusEffect=allEffectList.get(random.nextInt(allEffectList.size()));
 					}
 				}
 				case HARD -> {
 					if (statusEffect.getCategory()!=StatusEffectCategory.HARMFUL){
-						statusEffect=effects.get(random.nextInt(effects.size()));
+						statusEffect=allEffectList.get(random.nextInt(allEffectList.size()));
 					}
 				}
 			}
 		}
 
-		return this;
+		return Registries.STATUS_EFFECT.getEntry(statusEffect);
+	}
 
-		RegistryEntry<StatusEffect> effect= Registries.STATUS_EFFECT.getEntry(statusEffect);
+	public StatusEffectInstance getStatusEffectInstance(){
+		RegistryEntry<StatusEffect> effectEntry=getEntryStatusEffect();
+		StatusEffect effect=effectEntry.value();
+		StatusEffectCategory category=effect.getCategory();
 
-		StatusEffectCategory category=statusEffect.getCategory();
 		int categoryAmplifier = getCategoryAmplifier(isMonster, difficulty, category);
 
 		return new StatusEffectInstance(
-					effect,
-					120,
-					categoryAmplifier-1
-			  );
+			  effectEntry,
+			  120,
+			  categoryAmplifier-1
+		);
 	}
 
-	public void andToInstance(){
-
-	}
-
-	private static int getCategoryAmplifier(boolean isMonster, Difficulty difficulty, StatusEffectCategory category) {
+	protected static int getCategoryAmplifier(boolean isMonster, Difficulty difficulty, StatusEffectCategory category) {
 		int categoryAmplifier;
 
 		if (isMonster){

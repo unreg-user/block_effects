@@ -29,7 +29,7 @@ public class CommandsInit {
 								)
 						  ).then(
 							    CommandManager.literal("set").requires((source) -> source.hasPermissionLevel(2)).then(
-									  CommandManager.literal("disable").then(
+									  CommandManager.literal("remove").then(
 										    CommandManager.argument("effect", RegistryEntryReferenceArgumentType.registryEntry(registryAccess, RegistryKeys.STATUS_EFFECT)).executes(
 												  (context) ->{
 													  ServerCommandSource source = context.getSource();
@@ -39,7 +39,7 @@ public class CommandsInit {
 													  if (list.contains(entry)){
 														  list.remove(entry);
 														  rule.changed((context.getSource()).getServer());
-														  source.sendFeedback(() -> Text.literal(entry.getKey().get().getValue().toString()).append(" was disabled to list"), true);
+														  source.sendFeedback(() -> Text.literal(entry.getKey().get().getValue().toString()).append(" was removed from the list"), true);
 														  return rule.getCommandResult();
 													  }
 													  return 0;
@@ -47,7 +47,7 @@ public class CommandsInit {
 										    )
 									  )
 							    ).then(
-								      CommandManager.literal("enable").then(
+								      CommandManager.literal("add").then(
 										    CommandManager.argument("effect", RegistryEntryReferenceArgumentType.registryEntry(registryAccess, RegistryKeys.STATUS_EFFECT)).executes(
 											      (context) ->{
 												      ServerCommandSource source = context.getSource();
@@ -57,7 +57,7 @@ public class CommandsInit {
 												      if (!list.contains(entry)){
 													      list.add(entry);
 													      rule.changed((context.getSource()).getServer());
-													      source.sendFeedback(() -> Text.literal(entry.getKey().get().getValue().toString()).append(" was enabled to list"), true);
+													      source.sendFeedback(() -> Text.literal(entry.getKey().get().getValue().toString()).append(" was added to the list"), true);
 													      return rule.getCommandResult();
 												      }
 												      return 0;
@@ -73,7 +73,7 @@ public class CommandsInit {
 												if (!list.isEmpty()){
 													rule.setValue(new ArrayList<>());
 													rule.changed((context.getSource()).getServer());
-													source.sendFeedback(() -> Text.literal("list was cleared"), true);
+													source.sendFeedback(() -> Text.literal("the list was cleared"), true);
 													return rule.getCommandResult();
 												}
 												return 0;

@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.registry.Registries;
 import net.minecraft.world.GameRules;
+import wta.Block_effects;
 import wta.gamerule.types.IdentifierEntryedListGRRule;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class GamerulesInit {
 			  new GameRules.Type<IdentifierEntryedListGRRule<StatusEffect>>(
 				    StringArgumentType::greedyString,
 				    (type) -> new IdentifierEntryedListGRRule<>(type, Registries.STATUS_EFFECT, new ArrayList<>()),
-				    (minecraftServer, gamerule) -> {gamerule.deserializeT();},
+				    (minecraftServer, gamerule) -> {gamerule.onChanged(); Block_effects.reInitEffects(gamerule.getTValue());},
 				    (visitor, key, type) -> visitor.visit(key, type)
 			  )
 		);
