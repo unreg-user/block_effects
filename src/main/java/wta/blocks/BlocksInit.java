@@ -8,7 +8,11 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
+import wta.AllInit;
 import wta.blocks.blockEntities.EffectAmplifierBEClass;
+import wta.blocks.classes.EffectAmplifierClass;
+
+import java.util.List;
 
 import static wta.Block_effects.MODID;
 
@@ -24,6 +28,7 @@ public class BlocksInit {
 	public static BlockEntityType<EffectAmplifierBEClass> effectAmplifierBE;
 
 	public static void init(){
+		//Blocks & Items
 		radiusEffectB=Registry.register(
 			  Registries.BLOCK,
 			  Identifier.of(MODID, "radius_effect_block"),
@@ -53,7 +58,7 @@ public class BlocksInit {
 		effectAmplifierB=Registry.register(
 			  Registries.BLOCK,
 			  Identifier.of(MODID, "effect_amplifier_block"),
-			  new Block(
+			  new EffectAmplifierClass(
 					AbstractBlock.Settings.create()
 			  )
 		);
@@ -67,5 +72,12 @@ public class BlocksInit {
 			  Identifier.of(MODID, "effect_amplifier_block"),
 			  BlockEntityType.Builder.create(EffectAmplifierBEClass::new, effectAmplifierB).build()
 		);
+
+		//other
+		AllInit.addToInMI(List.of(
+			  radiusEffectI,
+			  radiusEffectAmplifierI,
+			  effectAmplifierI
+		));
 	}
 }

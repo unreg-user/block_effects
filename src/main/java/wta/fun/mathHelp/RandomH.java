@@ -1,11 +1,10 @@
 package wta.fun.mathHelp;
 
 import net.minecraft.util.math.random.Random;
+import org.jetbrains.annotations.Contract;
 
 import java.util.List;
 import java.util.function.Consumer;
-
-import org.jetbrains.annotations.Contract;
 
 public class RandomH {
 	public static <T> T getRandom(Random random, int sumWeights, int[] listWeights, T[] all_types){

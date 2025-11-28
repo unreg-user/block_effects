@@ -2,27 +2,34 @@ package wta.blocks.blockEntities;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import wta.blocks.BlocksInit;
 import wta.fun.EffectBooster;
 import wta.fun.mathHelp.RandomH;
-
-import static wta.Block_effects.allEffectList;
-import static wta.fun.EffectBooster.EffectBoosters;
+import wta.fun.serializHelp.SerializeFun;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 
+import static wta.Block_effects.allEffectList;
 import static wta.fun.ChooseEffectSystem2.radiusUE;
+import static wta.fun.EffectBooster.EffectBoosters;
 
 public class EffectAmplifierBEClass extends BlockEntity {
 	private ArrayList<EffectBoosters> boosters=new ArrayList<>();
+	public boolean isInitialized=false;
 
 	public EffectAmplifierBEClass(BlockPos pos, BlockState state) {
 		super(BlocksInit.effectAmplifierBE, pos, state);
@@ -31,16 +38,28 @@ public class EffectAmplifierBEClass extends BlockEntity {
 	@Override
 	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
+		NbtList boostersNbtList=nbt.getList("boosters", NbtList.COMPOUND_TYPE);
+		boosters=new ArrayList<>(
+			  boostersNbtList.stream()
+				    .map(e -> EffectBoosters.deserialize((NbtCompound) e))
+				    .filter(Objects::nonNull)
+				    .toList()
+		);
+		isInitialized=nbt.getBoolean("isInit");
 	}
 
 	@Override
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
-		nbt.put("boosters", boosters);
+		nbt.put("boosters", SerializeFun.serList(boosters));
+		nbt.putBoolean("isInit", isInitialized);
 	}
 
-	public void onPlaced(){
-		if (world == null) return;
+	public boolean onPlaced(PlayerEntity player){
+		if (world == null || isInitialized){
+			player.sendMessage(getBoostsText(), false);
+			return false;
+		}
 
 		HashSet<Block> blocks=new HashSet<>();
 		HashMap<Block, EffectBoosters> boostersMap=new HashMap<>();
@@ -57,6 +76,8 @@ public class EffectAmplifierBEClass extends BlockEntity {
 			}
 		}
 
+		blocks.remove(Blocks.AIR);
+
 		for (Block block : blocks){
 			boostersMap.put(block, new EffectBoosters(block, new ArrayList<>()));
 		}
@@ -68,14 +89,42 @@ public class EffectAmplifierBEClass extends BlockEntity {
 			  block -> boostersMap.get(block).boosters().add(generateBooster(random))
 		);
 
-		/*/for (Block block : blocks){
-			boosters.add(new EffectBooster(
-				  allEffectList.get(random.nextInt(allEffectList.size())),
-				  block,
-				  all_types.get(random.nextInt(all_types.size())),
-				  (float) random.nextTriangular(0.5D, 0.5D)
-			));
-		}/*/
+		boosters=new ArrayList<>(boostersMap.values());
+
+		isInitialized=true;
+		player.sendMessage(Text.literal("effect amplifier block active"), false);
+		return true;
+	}
+
+	public Text getBoostsText(){
+		MutableText text = Text.literal("effect amplifier block in ")
+			  .append(getPosText())
+			  .append("   has multipliers:");
+		for (EffectBoosters bsI : boosters){
+			text.append("\n  ")
+				  .append(Text.translatable(bsI.block().getTranslationKey()).styled(style -> style.withColor(Formatting.BLUE)))
+				  .append(":");
+			int lenBSI=bsI.boosters().size();
+			for (int i=0; i<lenBSI; i++) {
+				EffectBooster bI=bsI.boosters().get(i);
+				text.append("\n        "+(i+1)+".")
+					  .append(Text.translatable(bI.effect().getTranslationKey()).styled(style -> style.withColor(Formatting.AQUA))) //effect
+					  .append(" ").append(Text.literal(bI.bType().chatName).styled(style -> style.withColor(Formatting.RED))) //type
+					  .append(" ").append(Text.literal(String.valueOf( bI.value() )).styled(style -> style.withColor(Formatting.GREEN))) //value
+					  .append(" times for ").append(Text.literal(bI.bFor().chatName).styled(style -> style.withColor(Formatting.RED))); //type for
+			}
+		}
+		return text;
+	}
+
+	private Text getPosText(){
+		BlockPos pos = this.getPos();
+		return Text.literal(String.format(
+					  "[%s, %s, %s]", pos.getX(), pos.getY(), pos.getZ())
+			  )
+			  .styled(
+					style -> style.withColor(Formatting.BLUE)
+			  );
 	}
 
 	private static EffectBooster generateBooster(Random random){

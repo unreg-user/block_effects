@@ -30,10 +30,9 @@ public class AllInit {
 							entries.add(item);
 						}
 					}).build());
-		inMI=null;
 	}
 
-	public void addToInMI(Collection<? extends Item> collection){
+	public static void addToInMI(Collection<? extends Item> collection){
 		inMI.addAll(collection);
 	}
 }

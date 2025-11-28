@@ -4,8 +4,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -22,8 +23,15 @@ public class EffectAmplifierClass extends Block implements BlockEntityProvider {
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+	protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
 		EffectAmplifierBEClass be=(EffectAmplifierBEClass) world.getBlockEntity(pos);
-		if (be!=null)  be.onPlaced();
+
+		if (world.isClient) return ActionResult.FAIL;
+
+		if (be!=null) {
+			return be.onPlaced(player) ? ActionResult.SUCCESS : ActionResult.FAIL;
+		}else{
+			return ActionResult.PASS;
+		}
 	}
 }

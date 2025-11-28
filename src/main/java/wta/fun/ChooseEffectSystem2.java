@@ -18,7 +18,7 @@ public class ChooseEffectSystem2 extends ChooseEffectSystem{
 	private final BlockPos pos;
 	private final ServerWorld world;
 	private BlockPos posN;
-	private ArrayList<> effectAmplifiers;
+	//private ArrayList<> effectAmplifiers;
 
 	public ChooseEffectSystem2(ServerWorld world, Difficulty difficulty, BlockPos pos, boolean isMonster) {
 		super(world, difficulty, pos, isMonster);
