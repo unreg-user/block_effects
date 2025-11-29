@@ -20,8 +20,8 @@ public class BlocksInit {
 	public static Block radiusEffectB;
 	public static Item radiusEffectI;
 
-	public static Block radiusEffectAmplifierB;
-	public static Item radiusEffectAmplifierI;
+	public static Block diffuserB;
+	public static Item diffuserI;
 
 	public static Block effectAmplifierB;
 	public static Item effectAmplifierI;
@@ -42,17 +42,17 @@ public class BlocksInit {
 			  new BlockItem(radiusEffectB, new Item.Settings())
 		);
 
-		radiusEffectAmplifierB=Registry.register(
+		diffuserB=Registry.register(
 			  Registries.BLOCK,
-			  Identifier.of(MODID, "radius_effect_amplifier_block"),
+			  Identifier.of(MODID, "diffuser_block"),
 			  new Block(
 					AbstractBlock.Settings.create()
 			  )
 		);
-		radiusEffectAmplifierI=Registry.register(
+		diffuserI=Registry.register(
 			  Registries.ITEM,
-			  Identifier.of(MODID, "radius_effect_amplifier_block"),
-			  new BlockItem(radiusEffectAmplifierB, new Item.Settings())
+			  Identifier.of(MODID, "diffuser_block"),
+			  new BlockItem(diffuserB, new Item.Settings())
 		);
 
 		effectAmplifierB=Registry.register(
@@ -76,7 +76,7 @@ public class BlocksInit {
 		//other
 		AllInit.addToInMI(List.of(
 			  radiusEffectI,
-			  radiusEffectAmplifierI,
+			  diffuserI,
 			  effectAmplifierI
 		));
 	}

@@ -24,8 +24,8 @@ import java.util.HashSet;
 import java.util.Objects;
 
 import static wta.Block_effects.allEffectList;
-import static wta.fun.ChooseEffectSystem2.radiusUE;
 import static wta.fun.EffectBooster.EffectBoosters;
+import static wta.fun.chooseSystem.ContextualChooseEffS.radiusAmp;
 
 public class EffectAmplifierBEClass extends BlockEntity {
 	private ArrayList<EffectBoosters> boosters=new ArrayList<>();
@@ -66,9 +66,9 @@ public class EffectAmplifierBEClass extends BlockEntity {
 		boosters=new ArrayList<>();
 		Random random=world.getRandom();
 
-		for (int ix = -radiusUE; ix <= radiusUE; ix++) {
-			for (int iy = -radiusUE; iy <= radiusUE; iy++) {
-				for (int iz = -radiusUE; iz <= radiusUE; iz++) {
+		for (int ix = -radiusAmp; ix <= radiusAmp; ix++) {
+			for (int iy = -radiusAmp; iy <= radiusAmp; iy++) {
+				for (int iz = -radiusAmp; iz <= radiusAmp; iz++) {
 					BlockPos posI=pos.add(ix, iy, iz);
 					Block block = world.getBlockState(posI).getBlock();
 					blocks.add(block);
@@ -77,6 +77,9 @@ public class EffectAmplifierBEClass extends BlockEntity {
 		}
 
 		blocks.remove(Blocks.AIR);
+		blocks.remove(BlocksInit.diffuserB);
+		blocks.remove(BlocksInit.effectAmplifierB);
+		blocks.remove(BlocksInit.radiusEffectB);
 
 		for (Block block : blocks){
 			boostersMap.put(block, new EffectBoosters(block, new ArrayList<>()));

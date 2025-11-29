@@ -15,7 +15,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import wta.Block_effects;
-import wta.fun.ChooseEffectSystem;
+import wta.fun.chooseSystem.ContextualChooseEffS;
+import wta.fun.chooseSystem.DefaultChooseEffS;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityFixer extends Entity {
@@ -39,8 +40,8 @@ public abstract class LivingEntityFixer extends Entity {
 			tickCounter=140;
 
 			this.addStatusEffect(
-				  new ChooseEffectSystem(world, difficulty, this.getBlockPos(), this instanceof Monster)
-						.getStatusEffectInstance()
+				  new ContextualChooseEffS(world, difficulty, this.getBlockPos(), this instanceof Monster)
+					    .getStatusEffectInstance()
 			);
 		}
 	}
