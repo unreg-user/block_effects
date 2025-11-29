@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "block_effects:block/radius_effect_block"
+    }
+  }
+}

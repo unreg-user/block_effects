@@ -1,8 +1,10 @@
 package wta.blocks;
 
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -79,5 +81,6 @@ public class BlocksInit {
 			  diffuserI,
 			  effectAmplifierI
 		));
+		BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(), radiusEffectB, diffuserB, effectAmplifierB);
 	}
 }

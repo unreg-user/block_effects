@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "block_effects:block/amplifier_block"
+    }
+  }
+}

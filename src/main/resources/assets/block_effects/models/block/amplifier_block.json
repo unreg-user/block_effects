@@ -1,7 +1,7 @@
 {
   "format_version": "1.9.0",
   "textures": {
-    "side": "block_effects:block/radius_effect_block",
+    "side": "block_effects:block/amplifier_block",
     "particle": "block_effects:block/radius_effect_block"
   },
   "elements": [
