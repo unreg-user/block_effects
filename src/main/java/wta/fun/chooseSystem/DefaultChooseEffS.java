@@ -17,7 +17,7 @@ public class DefaultChooseEffS extends ChooseEffS{
 
 	public DefaultChooseEffS(ServerWorld world, Difficulty difficulty, BlockPos pos, boolean isMonster) {
 		super(difficulty, isMonster);
-		random=BlockPosRandom.of(world, pos, 18435L);
+		random= BlockPosRandom.of(world, pos, 18435L);
 	}
 
 	@Override

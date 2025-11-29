@@ -1,10 +1,13 @@
 package wta;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +30,15 @@ public class Block_effects implements ModInitializer {
 		CommandsInit.init();
 		BlocksInit.init();
 		AllInit.init();
-		ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new OnLoad());
+		ServerLifecycleEvents.SERVER_STARTED.register(new OnLoad());
 		LOGGER.info("Hello Fabric world! Now blocks have effects! Be careful!");
 	}
 
 	public static void reInitEffects(ServerWorld world){
 		reInitEffects(world.getGameRules().get(GamerulesInit.BlockDisabledEffectsGR).getTValue());
+	}
+	public static void reInitEffects(MinecraftServer server){
+		reInitEffects(server.getGameRules().get(GamerulesInit.BlockDisabledEffectsGR).getTValue());
 	}
 
 	public static void reInitEffects(List<StatusEffect> disabled_effects){

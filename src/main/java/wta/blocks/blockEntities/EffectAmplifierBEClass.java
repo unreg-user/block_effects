@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -14,14 +15,13 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import wta.blocks.BlocksInit;
+import static wta.fun.EffectBooster.BoosterFor;
 import wta.fun.EffectBooster;
+import wta.fun.FloatEffectInstance;
 import wta.fun.mathHelp.RandomH;
 import wta.fun.serializHelp.SerializeFun;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 import static wta.Block_effects.allEffectList;
 import static wta.fun.EffectBooster.EffectBoosters;
@@ -29,6 +29,7 @@ import static wta.fun.chooseSystem.ContextualChooseEffS.radiusAmp;
 
 public class EffectAmplifierBEClass extends BlockEntity {
 	private ArrayList<EffectBoosters> boosters=new ArrayList<>();
+	private HashMap<StatusEffect, ArrayList<EffectBooster>> activeBoosters=new HashMap<>();
 	public boolean isInitialized=false;
 
 	public EffectAmplifierBEClass(BlockPos pos, BlockState state) {
@@ -93,19 +94,65 @@ public class EffectAmplifierBEClass extends BlockEntity {
 		);
 
 		boosters=new ArrayList<>(boostersMap.values());
+		updateActiveBoosters();
 
 		isInitialized=true;
 		player.sendMessage(Text.literal("effect amplifier block active"), false);
 		return true;
 	}
 
+	public void updateActiveBoosters(){
+		if (world == null) return;
+		activeBoosters = new HashMap<>();
+		HashSet<Block> neighbours=getNeighbour();
+		for (EffectBoosters bsI : boosters){
+			if (neighbours.contains(bsI.block())){
+				for (EffectBooster bI : bsI.boosters()){
+					activeBoosters.computeIfAbsent(bI.effect(), key -> new ArrayList<>()).add(bI);
+				}
+			}
+		}
+	}
+
+	public void boost(FloatEffectInstance instanceF, boolean isMonster){
+		ArrayList<EffectBooster> boostersForEffect=activeBoosters.getOrDefault(instanceF.effect, null);
+		if (boostersForEffect == null) return;
+		for (EffectBooster bI : boostersForEffect){
+			BoosterFor bFor=bI.bFor();
+			if ((bFor == BoosterFor.ALL) || (isMonster & bFor == BoosterFor.MONSTER) || (!isMonster & bFor == BoosterFor.NOT_MONSTER)){
+				switch (bI.bType()){
+					case MULTIPLY_DURATION -> instanceF.duration *= bI.value();
+					case MULTIPLY_AMPLIFIER -> instanceF.amplifier *= bI.value();
+				}
+			}
+		}
+	}
+
+	private HashSet<Block> getNeighbour(){
+		if (world == null) return new HashSet<>();
+
+		return new HashSet<>(List.of(
+			  world.getBlockState(pos.up()).getBlock(),
+			  world.getBlockState(pos.down()).getBlock(),
+			  world.getBlockState(pos.south()).getBlock(),
+			  world.getBlockState(pos.north()).getBlock(),
+			  world.getBlockState(pos.east()).getBlock(),
+			  world.getBlockState(pos.west()).getBlock()
+		));
+	}
+
 	public Text getBoostsText(){
+		HashSet<Block> neighbours=getNeighbour();
 		MutableText text = Text.literal("effect amplifier block in ")
 			  .append(getPosText())
 			  .append("   has multipliers:");
 		for (EffectBoosters bsI : boosters){
 			text.append("\n  ")
-				  .append(Text.translatable(bsI.block().getTranslationKey()).styled(style -> style.withColor(Formatting.BLUE)))
+				  .append(Text.translatable(bsI.block().getTranslationKey())
+					    .styled(style -> neighbours.contains(bsI.block()) ?
+						      style.withColor(Formatting.BLUE) :
+						      style.withColor(Formatting.GRAY)
+						      ))
 				  .append(":");
 			int lenBSI=bsI.boosters().size();
 			for (int i=0; i<lenBSI; i++) {
@@ -134,7 +181,7 @@ public class EffectAmplifierBEClass extends BlockEntity {
 		return new EffectBooster(
 			  RandomH.getRandom(random, allEffectList),
 			  RandomH.getRandom(random, EffectBooster.BoosterType.all_typesBT),
-			  (float) random.nextTriangular(1, 1),
+			  random.nextFloat()*2.5F,
 			  EffectBooster.BoosterFor.getRandom(random)
 		);
 	}

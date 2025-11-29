@@ -46,16 +46,6 @@ public abstract class LivingEntityFixer extends Entity {
 		}
 	}
 
-	@Inject(
-		  method = "<init>",
-		  at = @At("RETURN")
-	)
-	private void reInit(EntityType<?> entityType, World world, CallbackInfo ci){
-		if (Block_effects.allEffectList==null && !world.isClient){
-			Block_effects.reInitEffects((ServerWorld) world);
-		}
-	}
-
 	//костыли
 	public LivingEntityFixer(EntityType<?> type, World world) {super(type, world);}
 }

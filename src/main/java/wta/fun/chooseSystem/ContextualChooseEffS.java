@@ -9,6 +9,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import wta.blocks.BlocksInit;
+import wta.blocks.blockEntities.EffectAmplifierBEClass;
+import wta.fun.FloatEffectInstance;
 import wta.fun.mathHelp.MathH;
 
 import java.util.ArrayList;
@@ -126,11 +128,18 @@ public class ContextualChooseEffS extends ChooseEffS {
 
 		int categoryAmplifier = getCategoryAmplifier(isMonster, difficulty, category);
 
-		return new StatusEffectInstance(
-			  effectEntry,
+		FloatEffectInstance instanceF=new FloatEffectInstance(
+			  effect,
 			  120,
 			  categoryAmplifier-1
 		);
+
+		for (BlockPos posI : boostPoses){
+			EffectAmplifierBEClass beI=(EffectAmplifierBEClass) world.getBlockEntity(posI);
+			if (beI != null) beI.boost(instanceF, isMonster);
+		}
+
+		return instanceF.getStatusEffectInstance(effectEntry);
 	}
 
 	private StatusEffect getDifEffect(BlockPos pos){
