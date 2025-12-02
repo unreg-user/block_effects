@@ -1,0 +1,12 @@
+{
+  "block.block_effects.effect_amplifier_block": "Усилитель",
+  "block.block_effects.diffuser_block": "Рассеиватель",
+  "block.block_effects.radius_effect_block": "Распределитель",
+  "block.block_effects.effect_tester": "Тестер",
+  "itemGroup.blockEffect": "Блоки эффектов",
+  "block_effects.boosters.type.to_duration": "к длительности",
+  "block_effects.boosters.type.to_amplifier": "к уровню",
+  "block_effects.boosters.for.to_monsters": "к монстрам",
+  "block_effects.boosters.for.to_not_monsters": "к не-монстрам",
+  "block_effects.boosters.for.to_all": "ко всем"
+}

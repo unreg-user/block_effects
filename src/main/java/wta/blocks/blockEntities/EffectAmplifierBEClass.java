@@ -15,16 +15,16 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import wta.blocks.BlocksInit;
-import static wta.fun.EffectBooster.BoosterFor;
 import wta.fun.EffectBooster;
 import wta.fun.FloatEffectInstance;
+import wta.fun.mathHelp.MathH;
 import wta.fun.mathHelp.RandomH;
 import wta.fun.serializHelp.SerializeFun;
 
 import java.util.*;
 
 import static wta.Block_effects.allEffectList;
-import static wta.fun.EffectBooster.EffectBoosters;
+import static wta.fun.EffectBooster.*;
 import static wta.fun.chooseSystem.ContextualChooseEffS.radiusAmp;
 
 public class EffectAmplifierBEClass extends BlockEntity {
@@ -40,9 +40,10 @@ public class EffectAmplifierBEClass extends BlockEntity {
 	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.readNbt(nbt, registryLookup);
 		NbtList boostersNbtList=nbt.getList("boosters", NbtList.COMPOUND_TYPE);
+		SerMap serMap=getSerMap(nbt.getCompound("serializeMap"));
 		boosters=new ArrayList<>(
 			  boostersNbtList.stream()
-				    .map(e -> EffectBoosters.deserialize((NbtCompound) e))
+				    .map(e -> EffectBoosters.deserialize((NbtCompound) e, serMap))
 				    .filter(Objects::nonNull)
 				    .toList()
 		);
@@ -52,6 +53,7 @@ public class EffectAmplifierBEClass extends BlockEntity {
 	@Override
 	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
 		super.writeNbt(nbt, registryLookup);
+		nbt.put("serializeMap", getSerMapNBT());
 		nbt.put("boosters", SerializeFun.serList(boosters));
 		nbt.putBoolean("isInit", isInitialized);
 	}
@@ -158,10 +160,10 @@ public class EffectAmplifierBEClass extends BlockEntity {
 			for (int i=0; i<lenBSI; i++) {
 				EffectBooster bI=bsI.boosters().get(i);
 				text.append("\n        "+(i+1)+".")
-					  .append(Text.translatable(bI.effect().getTranslationKey()).styled(style -> style.withColor(Formatting.AQUA))) //effect
-					  .append(" ").append(Text.literal(bI.bType().chatName).styled(style -> style.withColor(Formatting.RED))) //type
-					  .append(" ").append(Text.literal(String.valueOf( bI.value() )).styled(style -> style.withColor(Formatting.GREEN))) //value
-					  .append(" times for ").append(Text.literal(bI.bFor().chatName).styled(style -> style.withColor(Formatting.RED))); //type for
+					  .append(Text.translatable( bI.effect().getTranslationKey() ).styled(style -> style.withColor(Formatting.AQUA))) //effect
+					  .append(" ").append(MathH.getPercent( bI.value() )) //value
+					  .append(" ").append(Text.translatable(bI.bType().translationKey).withColor(0x555555)) //type
+					  .append(" ").append(Text.translatable(bI.bFor().translationKey).styled(style -> style.withColor(Formatting.RED))); //type for
 			}
 		}
 		return text;

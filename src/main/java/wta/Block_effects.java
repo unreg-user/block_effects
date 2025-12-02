@@ -1,12 +1,10 @@
 package wta;
 
+import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.registry.Registries;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import org.slf4j.Logger;
@@ -15,11 +13,12 @@ import wta.blocks.BlocksInit;
 import wta.command.CommandsInit;
 import wta.gamerule.GamerulesInit;
 import wta.other.OnLoad;
+import wta.particles.ParticlesInit;
 
 import java.util.List;
 import java.util.Map;
 
-public class Block_effects implements ModInitializer {
+public class Block_effects implements ModInitializer, ClientModInitializer {
 	public static final String MODID = "block_effects";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 	public static List<StatusEffect> allEffectList;
@@ -30,8 +29,15 @@ public class Block_effects implements ModInitializer {
 		CommandsInit.init();
 		BlocksInit.init();
 		AllInit.init();
+		ParticlesInit.init();
 		ServerLifecycleEvents.SERVER_STARTED.register(new OnLoad());
 		LOGGER.info("Hello Fabric world! Now blocks have effects! Be careful!");
+	}
+
+	@Override
+	public void onInitializeClient() {
+		BlocksInit.client_init();
+		ParticlesInit.client_init();
 	}
 
 	public static void reInitEffects(ServerWorld world){

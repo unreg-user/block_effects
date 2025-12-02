@@ -18,6 +18,9 @@
 		"main": [
 			"wta.Block_effects"
 		],
+		"client": [
+			"wta.Block_effects"
+		],
 		"fabric-datagen": [
 			"wta.Block_effectsDataGenerator"
 		]

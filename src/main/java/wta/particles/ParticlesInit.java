@@ -12,12 +12,16 @@ import static wta.Block_effects.MODID;
 
 public class ParticlesInit {
 	public static SimpleParticleType uncubicPT;
+
 	public static void init(){
 		uncubicPT=Registry.register(
 			  Registries.PARTICLE_TYPE,
 			  Identifier.of(MODID, "uncubic"),
 			  FabricParticleTypes.simple(true)
 		);
+	}
+
+	public static void client_init(){
 		ParticleFactoryRegistry.getInstance().register(uncubicPT, UncubicParticle.Factory::new);
 	}
 }

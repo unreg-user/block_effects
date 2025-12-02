@@ -36,6 +36,7 @@ public class BlocksInit {
 			  Identifier.of(MODID, "radius_effect_block"),
 			  new Block(
 					AbstractBlock.Settings.create()
+						  .nonOpaque()
 			  )
 		);
 		radiusEffectI=Registry.register(
@@ -49,6 +50,7 @@ public class BlocksInit {
 			  Identifier.of(MODID, "diffuser_block"),
 			  new Block(
 					AbstractBlock.Settings.create()
+						  .nonOpaque()
 			  )
 		);
 		diffuserI=Registry.register(
@@ -62,6 +64,7 @@ public class BlocksInit {
 			  Identifier.of(MODID, "effect_amplifier_block"),
 			  new EffectAmplifierClass(
 					AbstractBlock.Settings.create()
+						  .nonOpaque()
 			  )
 		);
 		effectAmplifierI=Registry.register(
@@ -81,6 +84,9 @@ public class BlocksInit {
 			  diffuserI,
 			  effectAmplifierI
 		));
-		BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(), radiusEffectB, diffuserB, effectAmplifierB);
+	}
+
+	public static void client_init(){
+		BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), radiusEffectB, diffuserB, effectAmplifierB);
 	}
 }

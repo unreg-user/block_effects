@@ -1,6 +1,5 @@
 {
 	"format_version": "1.9.0",
-	"credit": "Made with Blockbench",
 	"textures": {
 		"side": "block_effects:block/diffuser_block",
 		"particle": "block_effects:block/radius_effect_block"
