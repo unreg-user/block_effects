@@ -3,11 +3,13 @@ package wta.fun.chooseSystem;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.Difficulty;
+import wta.fun.FloatEffectInstance;
+import wta.gamerule.GamerulesInit;
 
-public abstract class ChooseEffS {
+public abstract class ChooseEffS<E, I, R> {
 	protected final Difficulty difficulty;
 	protected final boolean isMonster;
 
@@ -16,14 +18,11 @@ public abstract class ChooseEffS {
 		this.isMonster = isMonster;
 	}
 
-	public RegistryEntry<StatusEffect> getEntryStatusEffect(){
-		return Registries.STATUS_EFFECT.getEntry(getStatusEffect());
-	}
+	public abstract R getEntryStatusEffect();
+	public abstract E getStatusEffect();
+	public abstract I getStatusEffectInstance();
 
-	public abstract StatusEffect getStatusEffect();
-	public abstract StatusEffectInstance getStatusEffectInstance();
-
-	protected static int getCategoryAmplifier(boolean isMonster, Difficulty difficulty, StatusEffectCategory category) {
+	public static int getCategoryAmplifier(boolean isMonster, Difficulty difficulty, StatusEffectCategory category) {
 		int categoryAmplifier;
 
 		if (isMonster){
@@ -76,4 +75,20 @@ public abstract class ChooseEffS {
 
 		return categoryAmplifier;
 	}
+
+    public static StatusEffectInstance getInstanceDefaultRule(RegistryEntry<StatusEffect> effectEntry, int categoryAmplifier, ServerWorld world){
+        return new StatusEffectInstance(
+                effectEntry,
+                world.getGameRules().getInt(GamerulesInit.BlockEffectsDuration) - 20,
+                categoryAmplifier - world.random.nextInt(2)
+        );
+    }
+
+    public static FloatEffectInstance getFloatInstanceDefaultRule(StatusEffect effect, int categoryAmplifier, ServerWorld world){
+        return new FloatEffectInstance(
+                effect,
+                world.getGameRules().getInt(GamerulesInit.BlockEffectsDuration) - 20,
+                categoryAmplifier - world.random.nextInt(2)
+        );
+    }
 }

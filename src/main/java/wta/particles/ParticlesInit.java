@@ -11,17 +11,24 @@ import wta.particles.particles.UncubicParticle;
 import static wta.Block_effects.MODID;
 
 public class ParticlesInit {
-	public static SimpleParticleType uncubicPT;
+	public static SimpleParticleType blue_uncubicPT;
+    public static SimpleParticleType red_uncubicPT;
 
 	public static void init(){
-		uncubicPT=Registry.register(
+		blue_uncubicPT = Registry.register(
 			  Registries.PARTICLE_TYPE,
-			  Identifier.of(MODID, "uncubic"),
+			  Identifier.of(MODID, "blue_uncubic"),
 			  FabricParticleTypes.simple(true)
 		);
+        red_uncubicPT = Registry.register(
+                Registries.PARTICLE_TYPE,
+                Identifier.of(MODID, "red_uncubic"),
+                FabricParticleTypes.simple(true)
+        );
 	}
 
 	public static void client_init(){
-		ParticleFactoryRegistry.getInstance().register(uncubicPT, UncubicParticle.Factory::new);
+		ParticleFactoryRegistry.getInstance().register(blue_uncubicPT, UncubicParticle.Factory::new);
+        ParticleFactoryRegistry.getInstance().register(red_uncubicPT, UncubicParticle.Factory::new);
 	}
 }

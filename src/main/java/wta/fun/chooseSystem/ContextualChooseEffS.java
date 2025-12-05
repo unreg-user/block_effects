@@ -12,11 +12,13 @@ import wta.blocks.BlocksInit;
 import wta.blocks.blockEntities.EffectAmplifierBEClass;
 import wta.fun.FloatEffectInstance;
 import wta.fun.mathHelp.MathH;
+import wta.gamerule.GamerulesInit;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-public class ContextualChooseEffS extends ChooseEffS {
+public class ContextualChooseEffS extends ChooseEffS<ArrayList<StatusEffect>, ArrayList<StatusEffectInstance>, ArrayList<RegistryEntry<StatusEffect>>> {
 	public static final int radiusEff=2;
 	public static final int radiusDifCh=3;
 	public static final int radiusAmp=4;
@@ -32,8 +34,13 @@ public class ContextualChooseEffS extends ChooseEffS {
 		this.pos=pos;
 	}
 
-	@Override
-	public StatusEffect getStatusEffect() {
+    @Override
+    public ArrayList<RegistryEntry<StatusEffect>> getEntryStatusEffect() {
+        return null;
+    }
+
+    @Override
+	public ArrayList<StatusEffect> getStatusEffect() {
 		ArrayList<BlockPos> radList=new ArrayList<>(); //1
 		int radDis=Integer.MAX_VALUE;
 		ArrayList<BlockPos> difList=new ArrayList<>(); //2
@@ -64,14 +71,7 @@ public class ContextualChooseEffS extends ChooseEffS {
 						if (maxAxisDis > radiusEff){ //chance zone
 							farDifList.add(posI);
 						} else { //always zone
-							int sqDistance =  MathH.getSqDist(ix, iy, iz);
-							if (sqDistance < difDis){
-								difDis = sqDistance;
-								difList.clear();
-								difList.add(posI);
-							}else if(sqDistance == difDis){
-								difList.add(posI);
-							}
+							difList.add(posI);
 						}
 					} else if (block==BlocksInit.effectAmplifierB) {
 						boostPoses.add(posI);
@@ -80,66 +80,76 @@ public class ContextualChooseEffS extends ChooseEffS {
 			}
 		}
 
-		ArrayList<StatusEffect> results12 = new ArrayList<>();
+		ArrayList<StatusEffect> results12;
 		boolean isChanced = false;
-		if (radList.isEmpty() && difList.isEmpty()) {
-			isChanced = true;
-			if (!farDifList.isEmpty()){
-				results12 = new ArrayList<>(farDifList.stream()
-					  .map(this::getDifEffect)
-					  .filter(Objects::nonNull)
-					  .toList());
-			}
-		}else{
-			if (radDis <= difDis) {
-				results12.addAll(
-					  radList.stream()
-						    .map(pos -> new DefaultChooseEffS(world, difficulty, pos, isMonster).getStatusEffect())
-							.toList()
-				);
-			}
-			if (difDis <= radDis) {
-				results12.addAll(
-					  difList.stream()
-						    .map(this::getDifEffect)
-						    .filter(Objects::nonNull)
-						    .toList()
-				);
-			}
-		}
-
-		if (results12.isEmpty()){
-			return new DefaultChooseEffS(world, difficulty, pos, isMonster).getStatusEffect();
-		} else if (isChanced) {
-			if (world.random.nextInt(results12.size()+1)!=0){
-				return results12.get(world.random.nextInt(results12.size()));
-			}
-			return new DefaultChooseEffS(world, difficulty, pos, isMonster).getStatusEffect();
+        boolean isShouldChooseOne = false;
+		if (radList.isEmpty()) {
+            if (difList.isEmpty()){
+                isChanced = true;
+                if (!farDifList.isEmpty()){
+                    results12 = new ArrayList<>(farDifList.stream()
+                            .map(this::getDifEffect)
+                            .filter(Objects::nonNull)
+                            .toList());
+                } else {
+                    return new ArrayList<>(List.of(
+                            new DefaultChooseEffS(world, difficulty, pos, isMonster).getStatusEffect()
+                    ));
+                }
+            } else {
+                results12 = new ArrayList<>(
+                        difList.stream()
+                                .map(this::getDifEffect)
+                                .filter(Objects::nonNull)
+                                .toList()
+                );
+            }
 		} else {
-			return results12.get(world.random.nextInt(results12.size()));
+            isShouldChooseOne = true;
+            results12 = new ArrayList<>(
+                    radList.stream()
+                            .map(pos -> new DefaultChooseEffS(world, difficulty, pos, isMonster).getStatusEffect())
+                            .toList()
+            );
+        }
+
+		if (isShouldChooseOne) {
+            return new ArrayList<>(List.of(
+                    results12.get(world.random.nextInt(results12.size()))
+            ));
+        } else if (isChanced) {
+            if (world.random.nextInt(results12.size()+1)!=0){
+				return results12;
+			}
+			return new ArrayList<>(List.of(
+                    new DefaultChooseEffS(world, difficulty, pos, isMonster).getStatusEffect()
+            ));
+		} else {
+			return results12;
 		}
 	}
 
 	@Override
-	public StatusEffectInstance getStatusEffectInstance() {
-		RegistryEntry<StatusEffect> effectEntry=getEntryStatusEffect();
-		StatusEffect effect=effectEntry.value();
-		StatusEffectCategory category=effect.getCategory();
+	public ArrayList<StatusEffectInstance> getStatusEffectInstance() {
+		ArrayList<RegistryEntry<StatusEffect>> effectEntries = getEntryStatusEffect();
+        ArrayList<StatusEffectInstance> ret = new ArrayList<>();
 
-		int categoryAmplifier = getCategoryAmplifier(isMonster, difficulty, category);
+        for (RegistryEntry<StatusEffect> entryI : effectEntries) {
+            StatusEffect effectI = entryI.value();
+            StatusEffectCategory category = effectI.getCategory();
 
-		FloatEffectInstance instanceF=new FloatEffectInstance(
-			  effect,
-			  120,
-			  categoryAmplifier-1
-		);
+            int categoryAmplifier = getCategoryAmplifier(isMonster, difficulty, category);
 
-		for (BlockPos posI : boostPoses){
-			EffectAmplifierBEClass beI=(EffectAmplifierBEClass) world.getBlockEntity(posI);
-			if (beI != null) beI.boost(instanceF, isMonster);
-		}
+            FloatEffectInstance instanceF = getFloatInstanceDefaultRule(effectI, categoryAmplifier, world);
 
-		return instanceF.getStatusEffectInstance(effectEntry);
+            for (BlockPos posI : boostPoses) {
+                EffectAmplifierBEClass beI = (EffectAmplifierBEClass) world.getBlockEntity(posI);
+                if (beI != null) beI.boost(instanceF, isMonster);
+            }
+            ret.add(instanceF.getStatusEffectInstance(entryI));
+        }
+
+		return ret;
 	}
 
 	private StatusEffect getDifEffect(BlockPos pos){

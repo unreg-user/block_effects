@@ -15,6 +15,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import wta.fun.chooseSystem.ContextualChooseEffS;
+import wta.gamerule.GamerulesInit;
+
+import java.util.ArrayList;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityFixer extends Entity {
@@ -35,12 +38,10 @@ public abstract class LivingEntityFixer extends Entity {
 
 		tickCounter--;
 		if (tickCounter<=0){
-			tickCounter=140;
+			tickCounter = world.getGameRules().getInt(GamerulesInit.BlockEffectsDuration);
 
-			this.addStatusEffect(
-				  new ContextualChooseEffS(world, difficulty, this.getBlockPos(), this instanceof Monster)
-					    .getStatusEffectInstance()
-			);
+            ArrayList<StatusEffectInstance> effectInstances = new ContextualChooseEffS(world, difficulty, this.getBlockPos(), this instanceof Monster).getStatusEffectInstance();
+			for (StatusEffectInstance instanceI : effectInstances) this.addStatusEffect(instanceI);
 		}
 	}
 
