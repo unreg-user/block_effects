@@ -86,7 +86,7 @@ public class BlocksInit {
 		));
 	}
 
-	public static void client_init(){
+	public static void initClient(){
 		BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), radiusEffectB, diffuserB, effectAmplifierB);
 	}
 }

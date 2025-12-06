@@ -7,7 +7,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import wta.entities.groups.projectiles.uncubicExp.UncubicExp;
+import wta.fun.directionHelp.DirectionH;
 
 public class BlueExpItem extends AbstractExpItem{
     public BlueExpItem(Item.Settings settings) {
@@ -38,6 +41,6 @@ public class BlueExpItem extends AbstractExpItem{
 
     @Override
     public ProjectileEntity createEntity(World world, Position pos, ItemStack stack, Direction direction) {
-        return null;
+        return new UncubicExp(world, pos, DirectionH.dirToVec3d(direction), false);
     }
 }

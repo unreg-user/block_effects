@@ -54,7 +54,10 @@ public abstract class AbstractExpItem extends Item implements ProjectileItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (user.)
+        if (!world.isClient && user.isSneaking()){
+
+            world.spawnEntity();
+        }
         return super.use(world, user, hand);
     }
 }

@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wta.blocks.BlocksInit;
 import wta.command.CommandsInit;
+import wta.entities.EntitiesInit;
 import wta.gamerule.GamerulesInit;
 import wta.other.OnLoad;
 import wta.particles.ParticlesInit;
@@ -30,14 +31,16 @@ public class Block_effects implements ModInitializer, ClientModInitializer {
 		BlocksInit.init();
 		AllInit.init();
 		ParticlesInit.init();
+        EntitiesInit.init();
 		ServerLifecycleEvents.SERVER_STARTED.register(new OnLoad());
 		LOGGER.info("Hello Fabric world! Now blocks have effects! Be careful!");
 	}
 
 	@Override
 	public void onInitializeClient() {
-		BlocksInit.client_init();
-		ParticlesInit.client_init();
+		BlocksInit.initClient();
+		ParticlesInit.initClient();
+        EntitiesInit.initClient();
 	}
 
 	public static void reInitEffects(ServerWorld world){

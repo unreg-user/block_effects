@@ -27,7 +27,7 @@ public class ParticlesInit {
         );
 	}
 
-	public static void client_init(){
+	public static void initClient(){
 		ParticleFactoryRegistry.getInstance().register(blue_uncubicPT, UncubicParticle.Factory::new);
         ParticleFactoryRegistry.getInstance().register(red_uncubicPT, UncubicParticle.Factory::new);
 	}
